@@ -19,7 +19,10 @@ type Client struct {
 	Jar *cookiejar.Jar
 }
 
-// NewClient returns a new Client, ready for use.
+// NewClient returns a new Client.
+//
+// It needs to be authenticated with the Quest backend using Login, before it
+// can fetch other data from Quest.
 func NewClient() (*Client, error) {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
