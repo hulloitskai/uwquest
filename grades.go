@@ -33,7 +33,7 @@ func (cg *CourseGrade) String() string {
 	} else {
 		builder.WriteString(fmt.Sprintf("%f", *cg.Units))
 	}
-	fmt.Fprintf(builder, "Grade: %s", cg.Grade)
+	fmt.Fprintf(builder, ", Grade: %s, GradePoints: ", cg.Grade)
 
 	if cg.GradePoints == nil {
 		builder.WriteString("nil")

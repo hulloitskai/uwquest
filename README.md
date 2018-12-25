@@ -41,8 +41,10 @@ To use the `uwquest` package as a library, just open up your
 go get -u github.com/stevenxie/uwquest
 ```
 
-Then, start coding! For example, here's a program that will fetch your grades
-for the Fall 2018 term:
+Then, start coding!
+
+For example, here's a program that will fetch your grades for the Fall 2018
+term:
 
 ```go
 package main
@@ -69,7 +71,7 @@ func main() {
 		log.Fatalf("Failed to fetch terms: %v", err)
 	}
 
-	// Find the term that's named "Fall 2018
+	// Find the term that's named "Fall 2018".
 	var target *uwquest.Term
 	for _, term := range terms {
 		if term.Name == "Fall 2018" {
@@ -98,10 +100,10 @@ This program will output something like:
 
 ```text
 Found grades for the Fall 2018 term:
- • CourseGrade{ID: 0, Name: CS 245, Description: Logic and Computation, Gr...
- • CourseGrade{ID: 1, Name: CS 246, Description: Object-Oriented Software ...
- • CourseGrade{ID: 2, Name: MATH 128, Description: Calculus 2 for the Scie...
- • CourseGrade{ID: 3, Name: MATH 136, Description: Linear Algebra 1 (Hon M...
+ • CourseGrade{ID: 0, Name: CS 245, Description: Logic and Computation, GradingBasis: Numeric Grading Basis, Units: 0.500000, Grade: DNW, GradePoints: 16.000000}
+ • CourseGrade{ID: 1, Name: CS 246, Description: Object-Oriented Software Devel, GradingBasis: Numeric Grading Basis, Units: 0.500000, Grade: 71, GradePoints: 35.500000}
+ • CourseGrade{ID: 2, Name: MATH 128, Description: Calculus 2 for the Sciences, GradingBasis: Numeric Grading Basis, Units: 0.500000, Grade: 62, GradePoints: 31.000000}
+ • CourseGrade{ID: 3, Name: MATH 136, Description: Linear Algebra 1 (Hon Math), GradingBasis: Numeric Grading Basis, Units: 0.500000, Grade: 60, GradePoints: 30.000000}
 ```
 
 ## Example Programs
@@ -134,9 +136,7 @@ $ gradecheck
 
 <br />
 
----
-
-### Contributing
+## Contributing
 
 Want to help develop this? Just clone this repository (or a fork of it):
 
@@ -149,3 +149,18 @@ Make sure to set up git-hooks and other dependencies with:
 ```bash
 make setup
 ```
+
+<br />
+
+## Disclaimer
+
+Maybe you're looking at this and you're an employer. And... you think my grades
+are really bad.
+
+Um.
+
+_Whoops?_
+
+I'll try harder next term, I promise.
+
+Please... please still consider hiring me...
