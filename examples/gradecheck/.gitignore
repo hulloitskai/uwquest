@@ -1,0 +1,9 @@
+## The compiled binary:
+/build/
+/dist/
+/*gradecheck*
+!/*gradecheck*.*
+/*gradecheck*.exe
+
+## Secret files:
+.env

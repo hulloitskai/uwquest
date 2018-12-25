@@ -1,13 +1,6 @@
 ## [Repository]
 coverage.out
 
-## The compiled binary (excluding Go source files):
-/build/
-/dist/
-/*begone*
-!/*begone*.*
-/*begone*.exe
-
 ## Secrets:
 .env
 
