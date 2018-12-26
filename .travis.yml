@@ -1,0 +1,80 @@
+language: go
+
+go:
+  - '1.11'
+  - tip
+
+git:
+  depth: 3
+
+os:
+  - osx
+  - linux
+  - windows
+
+env:
+  global:
+    - GO111MODULE=on
+    - GOPATH="${TRAVIS_HOME}/gopath"
+    - GOBIN="${GOPATH}/bin"
+    - GOLINT="${GOBIN}/golint"
+    - PATH="${GOBIN}:${PATH}"
+
+cache:
+  directories:
+    ## Preserve golint executable.
+    - $GOBIN
+    ## Preserve Go module cache.
+    - $GOPATH/pkg/mod/cache
+
+## Mark Go version 'tip' as an optional.
+matrix:
+  exclude:
+    - go: tip
+      os: windows
+  allow_failures:
+    - go: tip
+    - os: windows
+  fast_finish: true
+
+## Install dependencies and code review tools.
+before_install:
+  - echo "GOBIN=$GOBIN" "GOLINT_BIN=$GOLINT_BIN"
+
+  ## Install golint, if no installation cache exists.
+  - |
+    if [ "$TRAVIS_OS_NAME" != windows ]; then
+      if ! command -v golint > /dev/null; then
+        rm -rf $GOLINT_BIN
+        echo "Installing 'golint'..."
+        GO111MODULE=off go get -u golang.org/x/lint/golint
+      fi
+      command -v golint
+    fi
+
+
+## Install all dependencies, start dependency services.
+install:
+  - |
+    if [ "$TRAVIS_OS_NAME" == windows ]; then
+      go mod download
+    else
+      make dl
+    fi
+
+## List diagonstic information before running tests.
+before_script:
+  - go env
+
+## Check code, perform tests with race-condition-checking.
+script:
+  - |
+    if [ "$TRAVIS_OS_NAME" == windows ]; then
+      go test ./... -timeout=20s -v
+    else
+      make review-race-v
+    fi
+
+after_success:
+  - |
+    [ "$TRAVIS_OS_NAME" != windows ] && bash <(curl -s https://codecov.io/bash)

@@ -13,8 +13,10 @@ import (
 var client *uwquest.Client
 
 func TestMain(m *testing.M) {
-	if err := godotenv.Load(); err != nil {
-		ess.Die("Failed to load environment variabels:", err)
+	if os.Getenv("TRAVIS") != "true" { // only load from .env if not CI
+		if err := godotenv.Load(); err != nil {
+			ess.Die("Failed to load environment variabels:", err)
+		}
 	}
 
 	user, ok := os.LookupEnv("QUEST_USER")

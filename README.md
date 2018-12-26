@@ -4,16 +4,11 @@ _A Golang client for the UWaterloo Quest API._
 
 [![GoDoc: Documentation][godoc-img]][godoc]
 [![Tags][tags-img]][tags]
+[![Travis: Build][travis-img]][travis]
+[![Codecov: Coverage][codecov-img]][codecov]
 [![Go Report Card][grp-img]][grp]
 
-[godoc]: https://godoc.org/github.com/stevenxie/uwquest
-[godoc-img]: https://godoc.org/github.com/stevenxie/uwquest?status.svg
-[tags]: https://github.com/stevenxie/uwquest/tags
-[tags-img]: https://img.shields.io/github/tag/stevenxie/uwquest.svg
-[grp]: https://goreportcard.com/report/github.com/stevenxie/uwquest
-[grp-img]: https://goreportcard.com/badge/github.com/stevenxie/uwquest
-
-## Why?
+### Why?
 
 I wanted to programmatically check my grades, and other stuff like that. Maybe
 get my grades emailed to me when they come out? But I didn't find any good Quest
@@ -164,3 +159,14 @@ _Whoops?_
 I'll try harder next term, I promise.
 
 Please... please still consider hiring me...
+
+[godoc]: https://godoc.org/github.com/stevenxie/uwquest
+[godoc-img]: https://godoc.org/github.com/stevenxie/uwquest?status.svg
+[tags]: https://github.com/stevenxie/uwquest/tags
+[tags-img]: https://img.shields.io/github/tag/stevenxie/uwquest.svg
+[travis]: https://travis-ci.com/stevenxie/uwquest
+[travis-img]: https://travis-ci.com/stevenxie/uwquest.svg?branch=master
+[codecov]: https://codecov.io/gh/stevenxie/uwquest
+[codecov-img]: https://codecov.io/gh/stevenxie/uwquest/branch/master/graph/badge.svg
+[grp]: https://goreportcard.com/report/github.com/stevenxie/uwquest
+[grp-img]: https://goreportcard.com/badge/github.com/stevenxie/uwquest
