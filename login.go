@@ -12,6 +12,9 @@ import (
 	ess "github.com/unixpickle/essentials"
 )
 
+// ErrBadLogin is an error which identifies a login error.
+var ErrBadLogin = errors.New("uwquest: bad login (invalid user ID or password)")
+
 // Login authenticats the Client session with the Quest API backend.
 //
 // Requires a username (WatIAM ID) and password.
@@ -51,6 +54,9 @@ func (c *Client) Login(user, pass string) error {
 	// Scrape SAML response from IDP login response.
 	samlResp, err := parseSAMLResponse(res.Body)
 	if err != nil {
+		if err == ErrBadLogin {
+			return err
+		}
 		return ess.AddCtx("uwquest: parsing login response body for SAML response",
 			err)
 	}
@@ -125,6 +131,11 @@ func parseSAMLResponse(body io.Reader) (string, error) {
 
 	sel := doc.Find("input[type=\"hidden\"]")
 	if slen := sel.Length(); slen != 1 {
+		sel = doc.Find(".form-element.form-error")
+		if sel.Text() == "The password you entered was incorrect." {
+			return "", ErrBadLogin
+		}
+
 		return "", fmt.Errorf("expected 1 hidden input tag, got %d", slen)
 	}
 	samlResp, ok := sel.Attr("value")

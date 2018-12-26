@@ -45,7 +45,7 @@ func (cg *CourseGrade) String() string {
 }
 
 // Grades fetches the grades for a particular term.
-func (c *Client) Grades(termID int) ([]*CourseGrade, error) {
+func (c *Client) Grades(termIndex int) ([]*CourseGrade, error) {
 	// Scrape hidden fields from Quest grades page.
 	res, err := c.Session.Get(GradesURL)
 	if err != nil {
@@ -72,7 +72,7 @@ func (c *Client) Grades(termID int) ([]*CourseGrade, error) {
 	form.Set("ICNAVTYPEDROPDOWN", "0")
 	form.Set("ICAction", "UW_DRVD_SSS_SCT_SSR_PB_GO")
 	form.Set("DERIVED_SSTSNAV_SSTS_MAIN_GOTO$27$", "9999")
-	form.Set("SSR_DUMMY_RECV1$sels$1$$0", strconv.Itoa(termID))
+	form.Set("SSR_DUMMY_RECV1$sels$1$$0", strconv.Itoa(termIndex))
 	body := strings.NewReader(form.Encode())
 
 	// Create and send request.
@@ -111,7 +111,7 @@ func (c *Client) Grades(termID int) ([]*CourseGrade, error) {
 
 		var grade *CourseGrade
 		if grade, err = parseGradeRow(row); err != nil {
-			err = ess.AddCtx(fmt.Sprintf("row %d", i), err)
+			ess.AddCtxTo(fmt.Sprintf("row %d", i), &err)
 			return false
 		}
 
@@ -137,21 +137,24 @@ func parseGradeRow(row *gq.Selection) (*CourseGrade, error) {
 	}
 	cg.Index = int(id[len(id)-1]-'0') - 1
 
-	sel := row.Find(fmt.Sprintf(`#CLS_LINK\$span\$%d`, cg.Index))
-	if sel.Length() == 0 {
-		return nil, errors.New("could not find course name")
+	var (
+		scraper  = indexedScraper{Index: cg.Index, Sel: row}
+		sel, err = scraper.Find(`CLS_LINK\$span`, "course name")
+	)
+	if err != nil {
+		return nil, err
 	}
 	cg.Name = sel.Text()
 
-	sel = row.Find(fmt.Sprintf(`#CLASS_TBL_VW_DESCR\$%d`, cg.Index))
-	if sel.Length() == 0 {
-		return nil, errors.New("could not find course description")
+	sel, err = scraper.Find("CLASS_TBL_VW_DESCR", "course description")
+	if err != nil {
+		return nil, err
 	}
 	cg.Description = sel.Text()
 
-	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_UNT_TAKEN\$%d`, cg.Index))
-	if sel.Length() == 0 {
-		return nil, errors.New("could not find course units")
+	sel, err = scraper.Find("STDNT_ENRL_SSV1_UNT_TAKEN", "course units")
+	if err != nil {
+		return nil, err
 	}
 	if text := sel.Text(); text != nbsp {
 		u64, err := strconv.ParseFloat(text, 32)
@@ -162,23 +165,22 @@ func parseGradeRow(row *gq.Selection) (*CourseGrade, error) {
 		cg.Units = &u32
 	}
 
-	sel = row.Find(fmt.Sprintf(`#GRADING_BASIS\$%d`, cg.Index))
-	if sel.Length() == 0 {
-		return nil, errors.New("could not find course grading basis")
+	if sel, err = scraper.Find("GRADING_BASIS", "grading basis"); err != nil {
+		return nil, err
 	}
 	cg.GradingBasis = sel.Text()
 
-	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_CRSE_GRADE_OFF\$%d`, cg.Index))
-	if sel.Length() == 0 {
-		return nil, errors.New("could not find grade")
+	sel, err = scraper.Find("STDNT_ENRL_SSV1_CRSE_GRADE_OFF", "grade")
+	if err != nil {
+		return nil, err
 	}
 	if text := sel.Text(); text != nbsp {
 		cg.Grade = sel.Text()
 	}
 
-	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_GRADE_POINTS\$%d`, cg.Index))
-	if sel.Length() == 0 {
-		return nil, errors.New("could not find grade points")
+	sel, err = scraper.Find("STDNT_ENRL_SSV1_GRADE_POINTS", "grade points")
+	if err != nil {
+		return nil, err
 	}
 	if text := sel.Text(); text != nbsp {
 		p64, err := strconv.ParseFloat(text, 32)

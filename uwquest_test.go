@@ -2,24 +2,36 @@ package uwquest_test
 
 import (
 	"os"
+	"testing"
 
 	"github.com/joho/godotenv"
+
+	"github.com/stevenxie/uwquest"
 	ess "github.com/unixpickle/essentials"
 )
 
-var user, pass string
+var client *uwquest.Client
 
-// Load environment variables upon initializing.
-func init() {
+func TestMain(m *testing.M) {
 	if err := godotenv.Load(); err != nil {
 		ess.Die("Failed to load environment variabels:", err)
 	}
 
-	var ok bool
-	if user, ok = os.LookupEnv("QUEST_USER"); !ok {
+	user, ok := os.LookupEnv("QUEST_USER")
+	if !ok {
 		ess.Die("No such env var 'QUEST_USER'")
 	}
-	if pass, ok = os.LookupEnv("QUEST_PASS"); !ok {
+	pass, ok := os.LookupEnv("QUEST_PASS")
+	if !ok {
 		ess.Die("No such env var 'QUEST_PASS'")
 	}
+
+	var err error
+	if client, err = uwquest.NewClient(); err != nil {
+		ess.Die("Error creating Quest client:", err)
+	}
+	if err = client.Login(user, pass); err != nil {
+		ess.Die("Error while logging into Quest:", err)
+	}
+	os.Exit(m.Run())
 }

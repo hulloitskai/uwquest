@@ -11,8 +11,8 @@ func TestClient_Grades(t *testing.T) {
 	}
 
 	if n := len(grades); n == 0 {
-		t.Fatal("Did not find any grades.")
+		t.Fatal("Did not find any course grades for term 0.")
 	}
 
-	t.Logf("Got grades for term 0: %v", grades)
+	t.Logf("Got course grades for term 0: %v", grades)
 }

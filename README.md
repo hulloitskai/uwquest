@@ -26,7 +26,7 @@ can build programs that use information from Quest.
 
 - [x] Quest login and authentication.
 - [x] Fetching grades data from Quest.
-- [ ] Fetching class schedule information.
+- [x] Fetching class schedule information.
 - [ ] Unofficial transcripts?
 - [ ] Course add / drop / shopping carts?
 

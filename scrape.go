@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"reflect"
 
 	gq "github.com/PuerkitoBio/goquery"
 	ess "github.com/unixpickle/essentials"
@@ -35,39 +34,15 @@ func scrapeHiddenFields(body io.Reader) (url.Values, error) {
 	return fields, nil
 }
 
-// unmarshallHTML unmarshalls sel into the struct that v points to, according to
-// v's struct tags.
-func unmarshallHTML(sel *gq.Selection, v interface{}) error {
-	// Validate v's type.
-	t := reflect.TypeOf(v)
-	if (t.Kind() != reflect.Ptr) || (t.Elem().Kind() != reflect.Struct) {
-		return errors.New("can only unmarshal HTML into a struct pointer")
+type indexedScraper struct {
+	Index int
+	Sel   *gq.Selection
+}
+
+func (is indexedScraper) Find(id, desc string) (*gq.Selection, error) {
+	sel := is.Sel.Find(fmt.Sprintf(`#%s\$%d`, id, is.Index))
+	if sel.Length() != 1 {
+		return nil, fmt.Errorf("could not find %s", desc)
 	}
-
-	var (
-		elem = t.Elem()
-		val  = reflect.ValueOf(v)
-	)
-	for i := 0; i < elem.NumField(); i++ {
-		var (
-			ft  = elem.Field(i)
-			tag = ft.Tag.Get("selector")
-		)
-		if tag == "" { // skip fields without a selector tag
-			continue
-		}
-		if ft.Type.Kind() != reflect.String {
-			return errors.New("can only unmarshal HTML text into a string field")
-		}
-
-		res := sel.Find(tag)
-		if res.Length() == 0 {
-			return fmt.Errorf("could not find element by the selection '%s'", tag)
-		}
-
-		fv := val.Field(i)
-		fv.SetString(res.First().Text())
-	}
-
-	return nil
+	return sel, nil
 }
