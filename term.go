@@ -11,15 +11,15 @@ import (
 
 // A Term represents a UW school term.
 type Term struct {
-	ID          int
+	Index       int
 	Name        string
 	Career      string
 	Institution string
 }
 
 func (t *Term) String() string {
-	return fmt.Sprintf("Term{ID: %d, Name: %s, Career: %s, Institution: %s}",
-		t.ID, t.Name, t.Career, t.Institution)
+	return fmt.Sprintf("Term{Index: %d, Name: %s, Career: %s, Institution: %s}",
+		t.Index, t.Name, t.Career, t.Institution)
 }
 
 // Terms fetches all the terms that a student has been enrolled for.
@@ -75,20 +75,20 @@ func parseTermRow(row *gq.Selection) (*Term, error) {
 	if !ok {
 		return nil, errors.New("row does not contain an 'id' attribute")
 	}
-	t.ID = int(id[len(id)-1]-'0') - 1
+	t.Index = int(id[len(id)-1]-'0') - 1
 
-	sel := row.Find(fmt.Sprintf(`#TERM_CAR\$%d`, t.ID))
+	sel := row.Find(fmt.Sprintf(`#TERM_CAR\$%d`, t.Index))
 	if sel.Length() == 0 {
 		return nil, errors.New("could not find term name")
 	}
 	t.Name = sel.Text()
 
-	if sel = row.Find(fmt.Sprintf(`#CAREER\$%d`, t.ID)); sel.Length() == 0 {
+	if sel = row.Find(fmt.Sprintf(`#CAREER\$%d`, t.Index)); sel.Length() == 0 {
 		return nil, errors.New("could not find career info")
 	}
 	t.Career = sel.Text()
 
-	if sel = row.Find(fmt.Sprintf(`#INSTITUTION\$%d`, t.ID)); sel.Length() == 0 {
+	if sel = row.Find(fmt.Sprintf(`#INSTITUTION\$%d`, t.Index)); sel.Length() == 0 {
 		return nil, errors.New("could not find institution name")
 	}
 	t.Institution = sel.Text()

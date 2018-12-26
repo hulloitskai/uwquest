@@ -23,7 +23,7 @@ func ReadCreds() (*Credentials, error) {
 
 	if creds.User == "" {
 		fmt.Print("Enter your Quest ID: ")
-		if _, err := fmt.Scanf("%s", &creds.User); err != nil {
+		if _, err := fmt.Scanln(&creds.User); err != nil {
 			return nil, ess.AddCtx("gradecheck: reading username", err)
 		}
 	}

@@ -122,7 +122,7 @@ those missing values.
 
 <img src="./docs/gradecheck-demo.gif" width="725px" />
 
-#### Installation
+#### Installation:
 
 _Make sure you have [Go](https://golang.org) installed._
 

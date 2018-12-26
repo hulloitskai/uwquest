@@ -11,9 +11,9 @@ import (
 	ess "github.com/unixpickle/essentials"
 )
 
-// A CourseGrade represents the grade of a particular course.
+// A CourseGrade represents the grades for a particular course.
 type CourseGrade struct {
-	ID           int
+	Index        int
 	Name         string
 	Description  string
 	GradingBasis string
@@ -23,25 +23,25 @@ type CourseGrade struct {
 }
 
 func (cg *CourseGrade) String() string {
-	builder := new(strings.Builder)
-	fmt.Fprintf(builder, "CourseGrade{ID: %d, Name: %s, Description: %s, "+
-		"GradingBasis: %s, Units: ", cg.ID, cg.Name, cg.Description,
+	sb := new(strings.Builder)
+	fmt.Fprintf(sb, "CourseGrade{Index: %d, Name: %s, Description: %s, "+
+		"GradingBasis: %s, Units: ", cg.Index, cg.Name, cg.Description,
 		cg.GradingBasis)
 
 	if cg.Units == nil {
-		builder.WriteString("nil")
+		sb.WriteString("<nil>")
 	} else {
-		builder.WriteString(fmt.Sprintf("%f", *cg.Units))
+		fmt.Fprintf(sb, "%f", *cg.Units)
 	}
-	fmt.Fprintf(builder, ", Grade: %s, GradePoints: ", cg.Grade)
+	fmt.Fprintf(sb, ", Grade: %s, GradePoints: ", cg.Grade)
 
 	if cg.GradePoints == nil {
-		builder.WriteString("nil")
+		sb.WriteString("<nil>")
 	} else {
-		builder.WriteString(fmt.Sprintf("%f", *cg.GradePoints))
+		fmt.Fprintf(sb, "%f", *cg.GradePoints)
 	}
-	builder.WriteByte('}')
-	return builder.String()
+	sb.WriteByte('}')
+	return sb.String()
 }
 
 // Grades fetches the grades for a particular term.
@@ -67,7 +67,7 @@ func (c *Client) Grades(termID int) ([]*CourseGrade, error) {
 		return nil, ess.AddCtx("uwquest: closing response body", err)
 	}
 
-	// Configure
+	// Set custom form fields.
 	form.Set("ICAJAX", "1")
 	form.Set("ICNAVTYPEDROPDOWN", "0")
 	form.Set("ICAction", "UW_DRVD_SSS_SCT_SSR_PB_GO")
@@ -135,21 +135,21 @@ func parseGradeRow(row *gq.Selection) (*CourseGrade, error) {
 	if !ok {
 		return nil, errors.New("row does not contain an 'id' attribute")
 	}
-	cg.ID = int(id[len(id)-1]-'0') - 1
+	cg.Index = int(id[len(id)-1]-'0') - 1
 
-	sel := row.Find(fmt.Sprintf(`#CLS_LINK\$span\$%d`, cg.ID))
+	sel := row.Find(fmt.Sprintf(`#CLS_LINK\$span\$%d`, cg.Index))
 	if sel.Length() == 0 {
 		return nil, errors.New("could not find course name")
 	}
 	cg.Name = sel.Text()
 
-	sel = row.Find(fmt.Sprintf(`#CLASS_TBL_VW_DESCR\$%d`, cg.ID))
+	sel = row.Find(fmt.Sprintf(`#CLASS_TBL_VW_DESCR\$%d`, cg.Index))
 	if sel.Length() == 0 {
 		return nil, errors.New("could not find course description")
 	}
 	cg.Description = sel.Text()
 
-	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_UNT_TAKEN\$%d`, cg.ID))
+	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_UNT_TAKEN\$%d`, cg.Index))
 	if sel.Length() == 0 {
 		return nil, errors.New("could not find course units")
 	}
@@ -162,13 +162,13 @@ func parseGradeRow(row *gq.Selection) (*CourseGrade, error) {
 		cg.Units = &u32
 	}
 
-	sel = row.Find(fmt.Sprintf(`#GRADING_BASIS\$%d`, cg.ID))
+	sel = row.Find(fmt.Sprintf(`#GRADING_BASIS\$%d`, cg.Index))
 	if sel.Length() == 0 {
 		return nil, errors.New("could not find course grading basis")
 	}
 	cg.GradingBasis = sel.Text()
 
-	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_CRSE_GRADE_OFF\$%d`, cg.ID))
+	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_CRSE_GRADE_OFF\$%d`, cg.Index))
 	if sel.Length() == 0 {
 		return nil, errors.New("could not find grade")
 	}
@@ -176,7 +176,7 @@ func parseGradeRow(row *gq.Selection) (*CourseGrade, error) {
 		cg.Grade = sel.Text()
 	}
 
-	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_GRADE_POINTS\$%d`, cg.ID))
+	sel = row.Find(fmt.Sprintf(`#STDNT_ENRL_SSV1_GRADE_POINTS\$%d`, cg.Index))
 	if sel.Length() == 0 {
 		return nil, errors.New("could not find grade points")
 	}

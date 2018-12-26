@@ -36,11 +36,11 @@ func main() {
 
 	fmt.Println("Terms found:")
 	for _, term := range terms {
-		fmt.Printf("Term %d: %s\n", term.ID, term.Name)
-		grades, err := quest.Grades(term.ID)
+		fmt.Printf("Term %d: %s\n", term.Index, term.Name)
+		grades, err := quest.Grades(term.Index)
 		if err != nil {
-			ess.Die(fmt.Sprintf("Error fetching grades data for term %d:", term.ID),
-				err)
+			ess.Die(fmt.Sprintf("Error fetching grades data for term %d:",
+				term.Index), err)
 		}
 		for _, courseGrade := range grades {
 			if courseGrade.Grade == "" {
@@ -49,4 +49,7 @@ func main() {
 			fmt.Printf("\t- %s: %s\n", courseGrade.Name, courseGrade.Grade)
 		}
 	}
+
+	fmt.Print("\nPress enter to exit...")
+	fmt.Scanln() // wait for newline
 }
