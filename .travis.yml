@@ -39,21 +39,19 @@ matrix:
 
 ## Install dependencies and code review tools.
 before_install:
-  - echo "GOBIN=$GOBIN" "GOLINT_BIN=$GOLINT_BIN"
-
-  ## Install golint, if no installation cache exists.
+  ## Install golint.
   - |
+    echo "Contents of $GOBIN:" && ls -l $GOBIN && \
     if [ "$TRAVIS_OS_NAME" != windows ]; then
       if ! command -v golint > /dev/null; then
-        rm -rf $GOLINT_BIN
-        echo "Installing 'golint'..."
+        rm -rf $GOLINT_BIN && \
+        echo "Installing 'golint'..." && \
         GO111MODULE=off go get -u golang.org/x/lint/golint
       fi
-      command -v golint
-    fi
+    fi && \
+    command -v golint
 
-
-## Install all dependencies, start dependency services.
+## Install all dependencies.
 install:
   - |
     if [ "$TRAVIS_OS_NAME" == windows ]; then

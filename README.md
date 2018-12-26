@@ -24,8 +24,10 @@ can build programs that use information from Quest.
 - [x] Fetching class schedule information.
 - [ ] Unofficial transcripts?
 - [ ] Course add / drop / shopping carts?
+- [ ] ??? other stuff ???
 
-> _...and maybe more..._
+[Open an issue](https://github.com/stevenxie/uwquest/issues/new) to request
+a new feature that you want to see added to `uwquest`!
 
 ## Usage
 
