@@ -1,3 +1,9 @@
+> ### Archive Notice
+>
+> Due to changes to the UW Quest authentication API, and my lack of personal
+> use of this repository, I am deprecating this client library—it will no
+> longer be maintained.
+
 # uwquest
 
 _A Golang client for the UWaterloo Quest API._
